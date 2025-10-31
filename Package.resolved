@@ -1,0 +1,15 @@
+{
+  "originHash" : "977bfd8277a02e68f1391f99bd74fff077645c24b4c6a4a3ceb32df869075948",
+  "pins" : [
+    {
+      "identity" : "ucnetworkkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/unioncoophypermarket/UCNetworkKit.git",
+      "state" : {
+        "branch" : "Optimization/Swift6",
+        "revision" : "3e17cd23292f5e88b465f717d997dbdd300dee52"
+      }
+    }
+  ],
+  "version" : 3
+}
