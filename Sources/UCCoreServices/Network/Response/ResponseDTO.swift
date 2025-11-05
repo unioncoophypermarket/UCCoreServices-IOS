@@ -1,5 +1,5 @@
 //
-//  Response.swift
+//  ResponseDTO.swift
 //  App
 //
 //  Created by Mahmoud Alaa on 9/18/23.
@@ -8,7 +8,7 @@
 import Foundation
 
 @frozen
-public struct Response<T: Decodable>: Decodable {
+public struct ResponseDTO<T: Decodable>: Decodable {
     
     public var result: Int?
     public var data: T?
@@ -37,29 +37,27 @@ public struct Response<T: Decodable>: Decodable {
 }
 
 public
-extension Response {
-    init(
-        result: Int? = 1,
-        data: T?,
-        message: String? = nil,
-        code: String? = "200"
-    ) {
+extension ResponseDTO {
+    
+    init(result: Int? = 1,
+         data: T?,
+         message: String? = nil,
+         code: String? = "200") {
         self.result = result
         self.data = data
         self.message = message
         self.code = code
     }
+    
 }
 
 // MARK: - Internal Decoding Utilities
 private
-extension Response {
+extension ResponseDTO {
     
-    static func decodeFirst<Value: Decodable>(
-        of keys: [CodingKeys],
-        as type: Value.Type,
-        from container: KeyedDecodingContainer<CodingKeys>
-    ) throws -> Value? {
+    static func decodeFirst<Value: Decodable>(of keys: [CodingKeys],
+                                              as type: Value.Type,
+                                              from container: KeyedDecodingContainer<CodingKeys>) throws -> Value? {
         for key in keys {
             if let value = try? container.decodeIfPresent(Value.self, forKey: key) {
                 return value
@@ -77,11 +75,9 @@ extension Response {
         return nil
     }
     
-    static func decodeSafely<Value: Decodable>(
-        _ type: Value.Type,
-        for keys: [CodingKeys],
-        from container: KeyedDecodingContainer<CodingKeys>
-    ) -> Value? {
+    static func decodeSafely<Value: Decodable>(_ type: Value.Type,
+                                               for keys: [CodingKeys],
+                                               from container: KeyedDecodingContainer<CodingKeys>) -> Value? {
         for key in keys {
             if let value = try? container.decodeIfPresent(Value.self, forKey: key) {
                 return value

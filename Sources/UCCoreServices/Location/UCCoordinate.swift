@@ -1,0 +1,17 @@
+//
+//  UCCoordinate.swift
+//  UCCoreServices
+//
+//  Created by Mahmoud Alaa on 05/11/2025.
+//
+
+import Foundation
+
+public struct UCCoordinate: Sendable, Equatable {
+    public let latitude: Double
+    public let longitude: Double
+    public init(latitude: Double, longitude: Double) {
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+}
