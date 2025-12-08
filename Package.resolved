@@ -1,5 +1,5 @@
 {
-  "originHash" : "977bfd8277a02e68f1391f99bd74fff077645c24b4c6a4a3ceb32df869075948",
+  "originHash" : "d89806223bbaf4155c765bd4656137c0569da78453b10b1ef7b8b62d07b13c81",
   "pins" : [
     {
       "identity" : "ucnetworkkit",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/unioncoophypermarket/UCNetworkKit.git",
       "state" : {
         "branch" : "Optimization/Swift6",
-        "revision" : "3e17cd23292f5e88b465f717d997dbdd300dee52"
+        "revision" : "07f6a68cde16a2ccef2e1a2a10525ca82cd03604"
       }
     }
   ],

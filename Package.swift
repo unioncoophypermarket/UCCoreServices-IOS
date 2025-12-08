@@ -10,6 +10,7 @@ let package = Package(
     ],
     products: [
         .library(name: "UCCoreServices", targets: ["UCCoreServices"]),
+        .library(name: "UCPaymentKit", targets: ["UCPaymentKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/unioncoophypermarket/UCNetworkKit.git",
@@ -25,6 +26,10 @@ let package = Package(
         .testTarget(
             name: "UCCoreServicesTests",
             dependencies: ["UCCoreServices"]
+        ),
+        .target(
+            name: "UCPaymentKit",
+            path: "Sources/UCPaymentKit"
         )
     ]
 )

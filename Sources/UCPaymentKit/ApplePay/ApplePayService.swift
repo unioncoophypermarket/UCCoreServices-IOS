@@ -1,22 +1,23 @@
 //
 //  ApplePayService.swift
-//  UnionCoop
+//  UCPaymentKit
 //
 //  Created by Mahmoud Alaa on 6/19/25.
 //
 
+import Foundation
 import PassKit
 #if os(macOS)
 import AppKit
 #endif
 
-typealias ApplePayCompletion = @Sendable (Result<String, ApplePayError>) -> Void
+public typealias ApplePayCompletion = @Sendable (Result<String, ApplePayError>) -> Void
 
 @MainActor
-final class ApplePayService: NSObject {
+public final class ApplePayService: NSObject {
     
     // MARK: - Singleton
-    static let shared = ApplePayService()
+    public static let shared = ApplePayService()
     private override init() {}
     
     // MARK: - Properties
@@ -26,7 +27,10 @@ final class ApplePayService: NSObject {
     private var paymentController: PKPaymentAuthorizationController?
     
     // MARK: - Start Payment
-    func start(with request: PKPaymentRequest, completion: @escaping ApplePayCompletion) {
+    /// Start Apple Pay with the provided request. Completion returns either:
+    /// - a JSON string (e.g. "{\"data\":\"...\",\"signature\":\"...\"...}") when possible, or
+    /// - a Base64 string fallback.
+    public func start(with request: PKPaymentRequest, completion: @escaping ApplePayCompletion) {
         self.completion = completion
         self.resultStatus = .failure
         self.tokenBlob = nil
@@ -35,7 +39,7 @@ final class ApplePayService: NSObject {
         controller.delegate = self
         self.paymentController = controller
         
-        // Capture a local, immutable copy to satisfy @Sendable capture requirements
+        // Keep local copy to satisfy @Sendable capture rules.
         let completionCopy = completion
         
         controller.present { presented in
@@ -51,22 +55,46 @@ final class ApplePayService: NSObject {
             }
         }
     }
+    
+    // MARK: - Helpers
+    /// Try to produce a JSON string from the raw token data. If that fails, return Base64.
+    private func tokenJSONString(from data: Data) -> String {
+        // 1) If data is valid UTF-8 text and looks like JSON, return it.
+        if let asText = String(data: data, encoding: .utf8),
+           asText.first == "{",
+           asText.contains("\"data\"") {
+            return asText
+        }
+        
+        // 2) Try deserialize and re-serialize to canonical JSON string.
+        if let object = try? JSONSerialization.jsonObject(with: data, options: []),
+           JSONSerialization.isValidJSONObject(object),
+           let canonical = try? JSONSerialization.data(withJSONObject: object, options: []),
+           let canonicalString = String(data: canonical, encoding: .utf8) {
+            return canonicalString
+        }
+        
+        // 3) Fallback: base64-encoded string (safe when JSON text not available).
+        return data.base64EncodedString()
+    }
 }
 
 // MARK: - PKPaymentAuthorizationControllerDelegate
 extension ApplePayService: @MainActor PKPaymentAuthorizationControllerDelegate {
     
-    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
-                                        didAuthorizePayment payment: PKPayment,
-                                        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
+    public func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
+                                               didAuthorizePayment payment: PKPayment,
+                                               handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         self.resultStatus = .success
-        // Prefer Base64 to avoid nil when the token data isn't UTF-8
-        self.tokenBlob = payment.token.paymentData.base64EncodedString()
+        
+        // Use the helper to prefer JSON text; fallback to Base64 automatically.
+        self.tokenBlob = tokenJSONString(from: payment.token.paymentData)
+        
         completion(.init(status: .success, errors: []))
     }
     
-    func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-        // Capture values to avoid capturing self in the completion closure
+    public func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
+        // Capture values to avoid capturing self in closure while controller.dismiss executes.
         let resultStatus = self.resultStatus
         let tokenBlob = self.tokenBlob
         let completionHandler = self.completion
@@ -91,8 +119,7 @@ extension ApplePayService: @MainActor PKPaymentAuthorizationControllerDelegate {
     #if canImport(UIKit)
     // iOS & Mac Catalyst
     @available(iOS 13.0, *)
-    func presentationWindow(for controller: PKPaymentAuthorizationController) -> UIWindow? {
-        // Choose the key window / foreground active window
+    public func presentationWindow(for controller: PKPaymentAuthorizationController) -> UIWindow? {
         let scene = UIApplication.shared.connectedScenes
             .first { $0.activationState == .foregroundActive } as? UIWindowScene
         return scene?.windows.first { $0.isKeyWindow } ?? scene?.windows.first
@@ -101,8 +128,7 @@ extension ApplePayService: @MainActor PKPaymentAuthorizationControllerDelegate {
     
     #if os(macOS)
     @available(macOS 11.0, *)
-    func presentationWindow(for controller: PKPaymentAuthorizationController) -> NSWindow? {
-        // Provide the key window on macOS
+    public func presentationWindow(for controller: PKPaymentAuthorizationController) -> NSWindow? {
         return NSApp.keyWindow ?? NSApp.windows.first
     }
     #endif
