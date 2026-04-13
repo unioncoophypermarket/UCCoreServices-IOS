@@ -8,13 +8,13 @@
 import Foundation
 import UCNetworkKit
 
-final class NetworkErrorResolver {
+public final class NetworkErrorResolver {
     
     // MARK: - Init
-    private init() {}
+    public init() {}
     
     // MARK: - Resolve
-    static func resolve(_ error: Error) -> ResolvedError {
+    public static func resolve(_ error: Error) -> ResolvedError {
         
         if let dataTransferError = error as? DataTransferError {
             return self.resolve(dataTransferError)
