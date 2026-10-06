@@ -56,6 +56,17 @@ public final class DateFormatterManager: @unchecked Sendable {
 
     // MARK: - Public API
 
+    /// String → Date (single known format, no brute-force fallback)
+    public func date(
+        from string: String,
+        format: DateFormat,
+        timeZone: TimeZone? = .gmt
+    ) -> Date? {
+
+        formatter(format: format, timeZone: timeZone)
+            .date(from: string)
+    }
+
     /// String → Date (tries all formats)
     public func toDate(
         _ string: String,
