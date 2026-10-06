@@ -13,8 +13,7 @@ let package = Package(
         .library(name: "UCPaymentKit", targets: ["UCPaymentKit"]),
     ],
     dependencies: [
-        // Local sibling checkout (~/Desktop/UCNetworkKit) so it can be edited from the UnionCoop workspace directly.
-        .package(path: "../UCNetworkKit")
+        .package(url: "https://github.com/unioncoophypermarket/UCNetworkKit", branch: "Optimization/Swift6")
     ],
     targets: [
         .target(
