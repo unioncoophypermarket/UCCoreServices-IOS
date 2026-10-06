@@ -1,0 +1,31 @@
+# Xcode specific files
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.app
+*.dsym
+*.dSYM.zip
+*.dSYM
+.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# IDE and editor files
+.idea/
+.DS_Store
+
+# Temporary and lock files
+*.moved-aside
+*.swp
+*.lock
