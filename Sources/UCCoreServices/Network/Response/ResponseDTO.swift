@@ -1,6 +1,6 @@
 //
 //  ResponseDTO.swift
-//  App
+//  UCCoreServices
 //
 //  Created by Mahmoud Alaa on 9/18/23.
 //
@@ -9,49 +9,60 @@ import Foundation
 
 @frozen
 public struct ResponseDTO<T: Decodable>: Decodable {
-    
+
     public var result: Int?
+    public var success: Bool?
     public var data: T?
     public var message: String?
     public var code: String?
-    
+
     public enum CodingKeys: String, CodingKey {
-        case result, data, code
+        case result, data, code, success
         case message = "msg"
-        
+
         case uppercaseResult = "Result"
         case uppercaseData = "Data"
         case uppercaseMessage = "Msg"
         case alternateMessage = "message"
+        case fullMessage = "Message"
         case uppercaseCode = "Code"
+        case uppercaseSuccess = "Success"
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         self.result = try Self.decodeFirst(of: [.result, .uppercaseResult], as: Int.self, from: container)
+        self.success = try Self.decodeFirst(of: [.success, .uppercaseSuccess], as: Bool.self, from: container)
         self.code = try Self.decodeCode(from: container)
-        self.message = try Self.decodeFirst(of: [.message, .alternateMessage, .uppercaseMessage], as: String.self, from: container)
+        self.message = try Self.decodeFirst(of: [.message, .alternateMessage, .uppercaseMessage, .fullMessage], as: String.self, from: container)
         self.data = Self.decodeSafely(T.self, for: [.data, .uppercaseData], from: container)
+    }
+
+    public var isSuccess: Bool {
+        if let success { return success }
+        if let result { return result == 1 }
+        return false
     }
 }
 
 public
 extension ResponseDTO {
-    
+
     init(result: Int? = 1,
+         success: Bool? = nil,
          data: T?,
          message: String? = nil,
          code: String? = "200") {
         self.result = result
+        self.success = success
         self.data = data
         self.message = message
         self.code = code
     }
-    
+
 }
 
-// MARK: - Internal Decoding Utilities
 private
 extension ResponseDTO {
     

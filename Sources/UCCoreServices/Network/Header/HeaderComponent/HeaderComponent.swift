@@ -44,6 +44,7 @@ public extension HeaderComponent {
         case apiPassword(_ value: String)
         case deviceType(_ value: String)
         case language(_ value: String)
+        case acceptLanguage(_ value: String)
         case appVersion(_ value: String)
         case company(_ value: String)
         case sessionId(_ value: String)
@@ -69,7 +70,8 @@ public extension HeaderComponent {
             case .apiKey:       return "Api-Key"
             case .apiPassword:  return "Api-Pwd"
             case .deviceType:   return "Device-Type"
-            case .language:     return "Lang"
+            case .language:         return "Lang"
+            case .acceptLanguage:   return "Accept-Language"
             case .accept:       return "Accept"
             case .contentType:  return "Content-Type"
             case .sessionId:    return "Session-Id"
@@ -101,6 +103,7 @@ public extension HeaderComponent {
                 let .deviceId(value),
                 let .deviceType(value),
                 let .language(value),
+                let .acceptLanguage(value),
                 let .appVersion(value),
                 let .company(value),
                 let .other(_, value):
