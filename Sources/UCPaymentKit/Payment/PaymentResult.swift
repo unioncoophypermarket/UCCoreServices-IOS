@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum PaymentResult {
+public enum PaymentResult: Equatable {
     case success(orderReference: String)
     case cancelled(orderReference: String)
     case failed(orderReference: String)

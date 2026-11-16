@@ -29,6 +29,10 @@ let package = Package(
         .target(
             name: "UCPaymentKit",
             path: "Sources/UCPaymentKit"
+        ),
+        .testTarget(
+            name: "UCPaymentKitTests",
+            dependencies: ["UCPaymentKit"]
         )
     ]
 )
